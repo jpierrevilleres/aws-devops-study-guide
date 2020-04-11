@@ -47,6 +47,10 @@ man: $(SPHINXBUILD)
 check:
 	python3 ext/linter.py $(SOURCE)
 
+github:
+	@make html
+	@cp -a /build/html/. ./docs
+
 install-html:
 install-pdf:
 install-info:
