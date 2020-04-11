@@ -1,0 +1,492 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+-->
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3.7. Compaction &mdash; Apache CouchDB® 3.0 Documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="http://docs.couchdb.org/en/stable/config/compaction.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/rtd_theme.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.8. Background Indexing" href="indexbuilds.html" />
+    <link rel="prev" title="3.6. Authentication and Authorization" href="auth.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Apache CouchDB®
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+<h2>Table of Contents</h2>
+
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replication/index.html">2. Replication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ddocs/index.html">3. Design Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../best-practices/index.html">4. Best Practices</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Administration Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">1. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/index.html">2. Setup</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">3. Configuration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro.html">3.1. Introduction To Configuring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="couchdb.html">3.2. Base Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster.html">3.3. Configuring Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="couch-peruser.html">3.4. couch_peruser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http.html">3.5. CouchDB HTTP Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html">3.6. Authentication and Authorization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.7. Compaction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#database-compaction-options">3.7.1. Database Compaction Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#view-compaction-options">3.7.2. View Compaction Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compaction-daemon">3.7.3. Compaction Daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="indexbuilds.html">3.8. Background Indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ioq.html">3.9. IO Queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">3.10. Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="replicator.html">3.11. Replicator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-servers.html">3.12. Query Servers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html">3.13. Miscellaneous Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resharding.html">3.14. Resharding</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cluster/index.html">4. Cluster Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintenance/index.html">5. Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fauxton/index.html">6. Fauxton</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">7. Experimental Features</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">1. API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../json-structure.html">2. JSON Structure Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../query-server/index.html">3. Query Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../partitioned-dbs/index.html">4. Partitioned Databases</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whatsnew/index.html">1. Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cve/index.html">2. Security Issues / CVEs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cve/index.html#reporting-new-security-problems-with-apache-couchdb">3. Reporting New Security Problems with Apache CouchDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">4. License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">5. Contributing to this Documentation</a></li>
+</ul>
+
+            
+          
+<h2>Quick Reference Guides</h2>
+<ul>
+<li><a href="../http-api.html">API Quick Reference</a></li>
+<li><a href="../config-ref.html">Configuration Quick Reference</a></li>
+</ul>
+
+
+<h2>Local Links</h2>
+<ul>
+<li><a href="../">Fauxton</a></li>
+</ul>
+
+
+<h2>More Help</h2>
+<ul>
+<li><a href="https://couchdb.apache.org/">CouchDB Homepage</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="https://couchdb.apache.org/#chat">Realtime Chat</a></li>
+<li><a href="https://github.com/apache/couchdb/issues">Issue Tracker</a></li>
+<li><a href="../download.html">Download Docs</a></li>
+</ul>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Apache CouchDB®</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">3. Configuration</a> &raquo;</li>
+        
+      <li>3.7. Compaction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/apache/couchdb-documentation/blob/master/src/config/compaction.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="compaction">
+<h1>3.7. Compaction<a class="headerlink" href="#compaction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="database-compaction-options">
+<span id="config-database-compaction"></span><h2>3.7.1. Database Compaction Options<a class="headerlink" href="#database-compaction-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="database_compaction">
+<code class="descname">[database_compaction]</code><a class="headerlink" href="#database_compaction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="database_compaction/doc_buffer_size">
+<code class="descname">doc_buffer_size</code><a class="headerlink" href="#database_compaction/doc_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the copy buffer’s maximum size in bytes:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[database_compaction]</span>
+<span class="na">doc_buffer_size</span> <span class="o">=</span> <span class="s">524288</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="option">
+<dt id="database_compaction/checkpoint_after">
+<code class="descname">checkpoint_after</code><a class="headerlink" href="#database_compaction/checkpoint_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers a checkpoint after the specified amount of bytes were
+successfully copied to the compacted database:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[database_compaction]</span>
+<span class="na">checkpoint_after</span> <span class="o">=</span> <span class="s">5242880</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="view-compaction-options">
+<span id="config-view-compaction"></span><h2>3.7.2. View Compaction Options<a class="headerlink" href="#view-compaction-options" title="Permalink to this headline">¶</a></h2>
+<dl class="section">
+<dt id="view_compaction">
+<code class="descname">[view_compaction]</code><a class="headerlink" href="#view_compaction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="view_compaction/keyvalue_buffer_size">
+<code class="descname">keyvalue_buffer_size</code><a class="headerlink" href="#view_compaction/keyvalue_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies maximum copy buffer size in bytes used during compaction:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[view_compaction]</span>
+<span class="na">keyvalue_buffer_size</span> <span class="o">=</span> <span class="s">2097152</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="compaction-daemon">
+<span id="config-compactions"></span><h2>3.7.3. Compaction Daemon<a class="headerlink" href="#compaction-daemon" title="Permalink to this headline">¶</a></h2>
+<p>CouchDB ships with an automated, event-driven daemon internally known as “smoosh” that
+continuously re-prioritizes the database and secondary index files on each node and
+automatically compacts the files that will recover the most free space according to the
+following parameters.</p>
+<dl class="section">
+<dt id="smoosh">
+<code class="descname">[smoosh]</code><a class="headerlink" href="#smoosh" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="option">
+<dt id="smoosh/db_channels">
+<code class="descname">db_channels</code><a class="headerlink" href="#smoosh/db_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>A comma-delimited list of channels that are sent the names of database
+files when those files are updated. Each channel can choose whether to
+enqueue the database for compaction; once a channel has enqueued the
+database, no additional channel in the list will be given the
+opportunity to do so.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh/view_channels">
+<code class="descname">view_channels</code><a class="headerlink" href="#smoosh/view_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>A comma-delimited list of channels that are sent the names of secondary
+index files when those files are updated. Each channel can choose
+whether to enqueue the index for compaction; once a channel has enqueued
+the index, no additional channel in the list will be given the
+opportunity to do so.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh/staleness">
+<code class="descname">staleness</code><a class="headerlink" href="#smoosh/staleness" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of minutes that the (expensive) priority calculation on an
+individual can be stale for before it is recalculated. Defaults to 5.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh/cleanup_index_files">
+<code class="descname">cleanup_index_files</code><a class="headerlink" href="#smoosh/cleanup_index_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set to true, the compaction daemon will delete the files for indexes
+that are no longer associated with any design document. Defaults to
+<cite>false</cite> and probably shouldn’t be changed unless the node is running low
+on disk space, and only after considering the ramifications.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh/wait_secs">
+<code class="descname">wait_secs</code><a class="headerlink" href="#smoosh/wait_secs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time a channel waits before starting compactions to allow time to
+observe the system and make a smarter decision about what to compact
+first. Hardly ever changed from the default of 30 (seconds).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="section">
+<dt id="smoosh.&lt;channel&gt;">
+<code class="descname">[smoosh.&lt;channel&gt;]</code><a class="headerlink" href="#smoosh.<channel>" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The following settings control the resource allocation for a given compaction
+channel.</p>
+<blockquote>
+<div><dl class="option">
+<dt id="smoosh.&lt;channel&gt;/capacity">
+<code class="descname">capacity</code><a class="headerlink" href="#smoosh.<channel>/capacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of items the channel can hold (lowest priority item
+is removed to make room for new items). Defaults to 9999.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/concurrency">
+<code class="descname">concurrency</code><a class="headerlink" href="#smoosh.<channel>/concurrency" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of jobs that can run concurrently in this channel.
+Defaults to 1.</p>
+</dd></dl>
+
+</div></blockquote>
+<p>There are also several settings that collectively control whether a channel will
+enqueue a file for compaction and how it prioritizes files within its queue:</p>
+<blockquote>
+<div><dl class="option">
+<dt id="smoosh.&lt;channel&gt;/max_priority">
+<code class="descname">max_priority</code><a class="headerlink" href="#smoosh.<channel>/max_priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each item must have a priority lower than this to be enqueued. Defaults
+to infinity.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/max_size">
+<code class="descname">max_size</code><a class="headerlink" href="#smoosh.<channel>/max_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item must be no larger than this many bytes in length to be
+enqueued. Defaults to infinity.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/min_priority">
+<code class="descname">min_priority</code><a class="headerlink" href="#smoosh.<channel>/min_priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item must have a priority at least this high to be enqueued.
+Defaults to 5.0 for ratio and 16 MB for slack.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/min_changes">
+<code class="descname">min_changes</code><a class="headerlink" href="#smoosh.<channel>/min_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum number of changes since last compaction before the item will
+be enqueued. Defaults to 0. Currently only works for databases.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/min_size">
+<code class="descname">min_size</code><a class="headerlink" href="#smoosh.<channel>/min_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item must be at least this many bytes in length to be enqueued.
+Defaults to 1mb (1048576 bytes).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="smoosh.&lt;channel&gt;/priority">
+<code class="descname">priority</code><a class="headerlink" href="#smoosh.<channel>/priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>The method used to calculate priority. Can be ratio (calculated as
+<cite>sizes.file/sizes.active</cite>) or slack (calculated as <cite>sizes.file -
+sizes.active</cite>). Defaults to ratio.</p>
+</dd></dl>
+
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="indexbuilds.html" class="btn btn-neutral float-right" title="3.8. Background Indexing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="auth.html" class="btn btn-neutral" title="3.6. Authentication and Authorization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Apache Software Foundation. CouchDB® is a registered trademark of the Apache Software Foundation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

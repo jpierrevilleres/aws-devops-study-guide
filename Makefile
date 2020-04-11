@@ -49,7 +49,7 @@ check:
 
 github:
 	@make html
-	@cp -a /build/html/. ./docs
+	@cp -a build/html/. ./docs
 
 install-html:
 install-pdf:
